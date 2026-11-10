@@ -5,8 +5,8 @@ A simple Python application for managing student records, recording marks, calcu
 ## Group Members
 
 1. **Mursal Ugas Ali** — COM/B/01-06392/2024
-2. **Mursal Ugas Ali** — COM/B/01-06392/2024
-3. **Mursal Ugas Ali** — COM/B/01-06392/2024
+2. **Broklyn Ongaki Mariita** — COM/B/01-02052/2024
+3. **Oduor Griffins Omondi** — COM/B/01-03538/2024
 
 ## Features
 

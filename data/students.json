@@ -2,13 +2,19 @@
     {
         "id": "S001",
         "name": "Mursal Ugas Ali",
-        "marks": 86.0,
-        "grade": "A"
+        "marks": 64.0,
+        "grade": "B"
     },
     {
         "id": "S002",
-        "name": "Marita Brukelyn",
+        "name": "Broklyn Ondaki Mariita",
         "marks": 78.0,
         "grade": "A"
+    },
+    {
+        "id": "S003",
+        "name": "Oduor Griffins Omondi",
+        "marks": 54.0,
+        "grade": "C"
     }
 ]
