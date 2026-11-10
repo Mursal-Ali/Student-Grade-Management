@@ -1,0 +1,14 @@
+[
+    {
+        "id": "S001",
+        "name": "Mursal Ugas Ali",
+        "marks": 86.0,
+        "grade": "A"
+    },
+    {
+        "id": "S002",
+        "name": "Marita Brukelyn",
+        "marks": 78.0,
+        "grade": "A"
+    }
+]
