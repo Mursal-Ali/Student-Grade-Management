@@ -1,97 +1,43 @@
 
 import json
-import os
+import math
+from pathlib import Path
 
-DATA_FILE = os.path.join("data", "students.json")
+
+DATA_FILE = Path(__file__).resolve().parent / "data" / "students.json"
 
 
 def load_students():
     """Load student records from the JSON file."""
+    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    if not DATA_FILE.exists():
+        save_students([])
+        return []
+
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as file:
             students = json.load(file)
-            return students if isinstance(students, list) else []
 
-    except FileNotFoundError:
-        return []
+        if not isinstance(students, list):
+            raise ValueError("Student data must be a list.")
 
-    except json.JSONDecodeError:
-        print("Error: Student data file contains invalid JSON.")
-        return []
+        return students
+
+    except json.JSONDecodeError as error:
+        raise ValueError("The student data file contains invalid JSON.") from error
 
 
 def save_students(students):
     """Save student records to the JSON file."""
-    os.makedirs("data", exist_ok=True)
+    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(students, file, indent=4)
 
 
-def add_student():
-    """Register a new student."""
-    students = load_students()
-
-    student_id = input("Enter student ID: ").strip()
-
-    if not student_id:
-        print("Student ID cannot be empty.")
-        return
-
-    if any(student["id"] == student_id for student in students):
-        print("A student with this ID already exists.")
-        return
-
-    name = input("Enter student name: ").strip()
-
-    if not name:
-        print("Student name cannot be empty.")
-        return
-
-    try:
-        marks = float(input("Enter student marks (0-100): "))
-
-        if not 0 <= marks <= 100:
-            print("Marks must be between 0 and 100.")
-            return
-
-    except ValueError:
-        print("Invalid input. Please enter numeric marks.")
-        return
-
-    student = {
-        "id": student_id,
-        "name": name,
-        "marks": marks,
-        "grade": calculate_grade(marks)
-    }
-
-    students.append(student)
-    save_students(students)
-
-    print(f"Student '{name}' registered successfully!")
-
-
-def view_students():
-    """Display all registered students."""
-    students = load_students()
-
-    if not students:
-        print("No student records found.")
-        return
-
-    print("\n========== STUDENT RECORDS ==========")
-
-    for student in students:
-        print(f"ID: {student['id']}")
-        print(f"Name: {student['name']}")
-        print(f"Marks: {student['marks']}")
-        print(f"Grade: {student['grade']}")
-        print("------------------------------------")
-
-
 def calculate_grade(marks):
-    """Calculate a student's grade based on marks."""
+    """Calculate a student's grade based on their marks."""
     if marks >= 70:
         return "A"
     elif marks >= 60:
@@ -104,58 +50,90 @@ def calculate_grade(marks):
         return "E"
 
 
-def search_student():
-    """Search for a student using their ID."""
+def add_student(student_id, name, marks):
+    """Register a new student."""
+    student_id = student_id.strip()
+    name = name.strip()
+
+    if not student_id:
+        raise ValueError("Student ID is required.")
+
+    if not name:
+        raise ValueError("Student name is required.")
+
+    try:
+        marks = float(marks)
+    except (TypeError, ValueError):
+        raise ValueError("Please enter valid numeric marks.")
+
+    if not math.isfinite(marks) or not 0 <= marks <= 100:
+        raise ValueError("Marks must be between 0 and 100.")
+
     students = load_students()
 
-    student_id = input("Enter student ID to search: ").strip()
+    if any(
+        student["id"].lower() == student_id.lower()
+        for student in students
+    ):
+        raise ValueError("A student with this ID already exists.")
 
-    student = next(
-        (student for student in students if student["id"] == student_id),
-        None
-    )
+    student = {
+        "id": student_id,
+        "name": name,
+        "marks": marks,
+        "grade": calculate_grade(marks)
+    }
 
-    if student is None:
-        print("Student not found.")
-        return
-
-    print("\n========== STUDENT DETAILS ==========")
-    print(f"ID: {student['id']}")
-    print(f"Name: {student['name']}")
-    print(f"Marks: {student['marks']}")
-    print(f"Grade: {student['grade']}")
-
-
-def delete_student():
-    """Delete a student record using their ID."""
-    students = load_students()
-
-    student_id = input("Enter student ID to delete: ").strip()
-
-    student = next(
-        (student for student in students if student["id"] == student_id),
-        None
-    )
-
-    if student is None:
-        print("Student not found.")
-        return
-
-    students.remove(student)
+    students.append(student)
     save_students(students)
 
-    print(f"Student '{student['name']}' deleted successfully!")
+    return student
+
+
+def view_students():
+    """Return all registered students."""
+    return load_students()
+
+
+def search_student(student_id):
+    """Find a student using their ID."""
+    student_id = student_id.strip().lower()
+
+    students = load_students()
+
+    for student in students:
+        if student["id"].lower() == student_id:
+            return student
+
+    return None
+
+
+def delete_student(student_id):
+    """Delete a student using their ID."""
+    student_id = student_id.strip().lower()
+
+    students = load_students()
+
+    updated_students = [
+        student for student in students
+        if student["id"].lower() != student_id
+    ]
+
+    if len(updated_students) == len(students):
+        return False
+
+    save_students(updated_students)
+
+    return True
 
 
 def calculate_average():
-    """Calculate the average marks of all registered students."""
+    """Calculate the average marks of all students."""
     students = load_students()
 
     if not students:
-        print("No student records available.")
-        return
+        return None
 
     total_marks = sum(student["marks"] for student in students)
-    average = total_marks / len(students)
 
-    print(f"Class Average: {average:.2f}%")
+    return total_marks / len(students)

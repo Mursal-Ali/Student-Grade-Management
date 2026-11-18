@@ -16,5 +16,11 @@
         "name": "Oduor Griffins Omondi",
         "marks": 54.0,
         "grade": "C"
+    },
+    {
+        "id": "S004",
+        "name": "Mursal_Mudow",
+        "marks": 84.0,
+        "grade": "A"
     }
 ]

@@ -30,6 +30,8 @@ Student-Grade-Management/
 │
 ├── main.py
 ├── student_manager.py
+├── ui.py
+│
 ├── data/
 │   └── students.json
 │
